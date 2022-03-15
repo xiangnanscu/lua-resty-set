@@ -1,6 +1,5 @@
 local pairs = pairs
 local select = select
-local next = next
 local table_concat = table.concat
 local table_clear
 if ngx then
@@ -77,12 +76,12 @@ set.except = set.__sub
 -- ^ (symmetric except)
 function set.__pow(t, o)
   local res = set:new()
-  for k, v in pairs(t) do
+  for k, _ in pairs(t) do
     if not o[k] then
       res[k] = true
     end
   end
-  for k, v in pairs(o) do
+  for k, _ in pairs(o) do
     if not t[k] then
       res[k] = true
     end
@@ -92,7 +91,17 @@ end
 set.sym_except = set.__pow
 -- == (equals)
 function set.__eq(t, o)
-  return next(set.__pow(t, o)) == nil
+  for k, _ in pairs(t) do
+    if not o[k] then
+      return false
+    end
+  end
+  for k, _ in pairs(o) do
+    if not t[k] then
+      return false
+    end
+  end
+  return true
 end
 set.equals = set.__eq
 

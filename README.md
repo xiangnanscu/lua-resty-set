@@ -1,7 +1,7 @@
 # lua-resty-set
 implement union, except, intersect and symmetric except for a set
 # Synopsis
-```
+```lua
 local a = set{1,2,3}
 local b = set{3,4,5}
 print(a+b)
