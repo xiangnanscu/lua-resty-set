@@ -1,5 +1,6 @@
 local pairs = pairs
 local select = select
+local next = next
 local table_concat = table.concat
 local table_clear
 if ngx then
@@ -38,6 +39,7 @@ set.new = set_from_array
 -- - (except)
 -- * (intersect)
 -- ^ (sym_except)
+-- == (equals test)
 -- + (UNION)
 function set.__add(t, o)
   local res = set:new()
@@ -88,6 +90,11 @@ function set.__pow(t, o)
   return res
 end
 set.sym_except = set.__pow
+-- == (equals)
+function set.__eq(t, o)
+  return next(set.__pow(t, o)) == nil
+end
+set.equals = set.__eq
 
 function set.add(t, ele)
   t[ele] = true
@@ -110,11 +117,12 @@ end
 if select('#', ...) == 0 then
   local a = set{1,2,3}
   local b = set{3,4,5}
-  print(a+b)
-  print(a*b)
-  print(a^b)
-  print(a-b)
-  print(b-a)
+  assert(a+b == set{1,2,3,4,5})
+  assert(a*b == set{3})
+  assert(a^b == set{1,2,4,5})
+  assert(a-b == set{1,2})
+  assert(b-a == set{4,5})
+  print("all test passed!")
 end
 
 return set
