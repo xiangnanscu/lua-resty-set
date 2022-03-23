@@ -15,22 +15,20 @@ end
 local function set_from_array(cls, t)
   local s = {}
   if t then
-    for i=1, #t do
+    for i = 1, #t do
       s[t[i]] = true
     end
   end
   return setmetatable(s, cls)
 end
-local set = setmetatable({}, {
-  __call = set_from_array
-})
+local set = setmetatable({}, {__call = set_from_array})
 set.__index = set
 set.__tostring = function(t)
   local keys = {}
   for k, _ in pairs(t) do
-    keys[#keys+1] = tostring(k)
+    keys[#keys + 1] = tostring(k)
   end
-  return '{'..table_concat(keys, ',')..'}'
+  return '{' .. table_concat(keys, ',') .. '}'
 end
 set.new = set_from_array
 -- set operator:
@@ -105,6 +103,19 @@ function set.__eq(t, o)
 end
 set.equals = set.__eq
 
+-- <=
+function set.__le(t, o)
+  for key, _ in pairs(t) do
+    if not o[key] then
+      return false
+    end
+  end
+  return true
+end
+function set.contains(t, o)
+  return set.__eq(o, t)
+end
+
 function set.add(t, ele)
   t[ele] = true
   return t
@@ -117,20 +128,21 @@ end
 function set.keys(t)
   local keys = {}
   for k, _ in pairs(t) do
-    keys[#keys+1] = k
+    keys[#keys + 1] = k
   end
   return keys
 end
 
-
 if select('#', ...) == 0 then
-  local a = set{1,2,3}
-  local b = set{3,4,5}
-  assert(a+b == set{1,2,3,4,5})
-  assert(a*b == set{3})
-  assert(a^b == set{1,2,4,5})
-  assert(a-b == set{1,2})
-  assert(b-a == set{4,5})
+  local a = set {1, 2, 3}
+  local b = set {3, 4, 5}
+  assert(a + b == set {1, 2, 3, 4, 5})
+  assert(a * b == set {3})
+  assert(a ^ b == set {1, 2, 4, 5})
+  assert(a - b == set {1, 2})
+  assert(b - a == set {4, 5})
+  assert(set {1, 2, 3} >= set {})
+  assert(set {1} <= set {1, 2})
   print("all test passed!")
 end
 
